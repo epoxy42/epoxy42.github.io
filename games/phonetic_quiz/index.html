@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="UTF-8">
+    <title>NATO Phoenetic Alphabet Quiz</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="">
+    <style>
+        body {
+            text-align: center;
+            font-size: 4em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #letter {
+            margin-top: 0.2em;
+            margin-bottom: 0.3em;
+        }
+
+        #answer {
+            font-size: 0.8em;
+            width: 80%;
+            max-width: 6em;
+        }
+    </style>
+    <body>
+        <form id="quiz">
+            <h1 id="letter"></h1>
+            <input type="text" id="answer" autocomplete="off" />
+        </form>
+        <script type="text/javascript">
+            const NATO_ALPHABET = new Map([
+                ['A', ['Alfa', 'Alpha']],
+                ['B', ['Bravo']],
+                ['C', ['Charlie']],
+                ['D', ['Delta']],
+                ['E', ['Echo']],
+                ['F', ['Foxtrot']],
+                ['G', ['Golf']],
+                ['H', ['Hotel']],
+                ['I', ['India']],
+                ['J', ['Juliett', 'Juliet']],
+                ['K', ['Kilo']],
+                ['L', ['Lima']],
+                ['M', ['Mike']],
+                ['N', ['November']],
+                ['O', ['Oscar']],
+                ['P', ['Papa']],
+                ['Q', ['Quebec']],
+                ['R', ['Romeo']],
+                ['S', ['Sierra']],
+                ['T', ['Tango']],
+                ['U', ['Uniform']],
+                ['V', ['Victor']],
+                ['W', ['Whiskey', 'Whisky']],
+                ['X', ['X-ray', 'Xray']],
+                ['Y', ['Yankee']],
+                ['Z', ['Zulu']]
+            ]);
+
+            const start = Date.now();
+            const quiz = document.getElementById('quiz');
+            const letter = document.getElementById('letter');
+            const answer = document.getElementById('answer');
+            const time = document.getElementById('time');
+    
+            function randomIndex() {
+                return Math.floor(Math.random() * (NATO_ALPHABET.size));
+            }
+
+            function setNextLetter() {
+                answer.value = '';
+                letter.textContent = Array.from(NATO_ALPHABET.keys())[randomIndex()];
+                letter.title = NATO_ALPHABET.get(letter.textContent)[0];
+            }
+    
+            function submitHandler(event) {
+                event.preventDefault();
+                const current = letter.textContent;
+
+                const correctAnswer = (val) => val.toUpperCase() == answer.value.toUpperCase();
+
+                if (NATO_ALPHABET.get(current).find(correctAnswer)) {
+                    NATO_ALPHABET.delete(current);
+                    
+                    if (NATO_ALPHABET.size == 0) {
+                        // Victory!
+
+                        const time = parseFloat((Date.now() - start) / 1000).toFixed(2);
+                        const previousHS = localStorage.getItem("hs") || time;
+                        const best = time <= previousHS;
+                        if (best) {
+                            localStorage.setItem('hs', time);
+                        }
+                        document.body.innerHTML = `<h2>${best ? 'New record!':'GREAT SUCCESS!'}</h2><h3>${time} seconds</h3>`;
+                        return;
+                    }
+
+                    setNextLetter();
+                } else {
+                    answer.style.backgroundColor = 'pink';
+                    setTimeout(() => answer.style.backgroundColor = 'white', 400);
+                }
+            }
+
+            setInterval(() => window.scrollTo(0, 0), 250)
+            quiz.addEventListener('submit', submitHandler);
+            setNextLetter();
+            answer.focus();
+        </script>
+    </body>
+</html>
